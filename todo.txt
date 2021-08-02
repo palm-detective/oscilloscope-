@@ -1,0 +1,5 @@
+08/02/2021  add dma and tim3 to sw add touch buttonms
+            fix routing on pcb
+            use 0402 component rather than 0603
+            finish simulation
+            
