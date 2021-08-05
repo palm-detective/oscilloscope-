@@ -1,5 +1,8 @@
-08/02/2021  add dma and tim3 to sw add touch buttonms
+08/02/2021  add dma and tim3 to sw
+	    add touch buttons
             fix routing on pcb
-            use 0402 component rather than 0603
+            use 0402 components rather than 0603
             finish simulation
-            
+
+future	    use rspberry pi 4 format -- usb c
+	    sigroc interface
