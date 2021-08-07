@@ -1,0 +1,99 @@
+
+   --- Expanded Deck Component Count ---
+C's 1
+L's 16
+M's 23
+R's 17
+tot: 57
+
+
+    --- Expanded Netlist ---
+HCMOS BERKELEY SPICE MODELS
+r:hc4053:hc4053:inp:1 hc4053:20 hc4053:hc4053:inp:4 100
+m:hc4053:hc4053:inp:p1 hc4053:hc4053:inp:4 hc4053:10 hc4053:10 hc4053:10 mhcpen w=20u l=2.4u ad=100p as=100p pd=40u ps=20u
+m:hc4053:hc4053:inp:n1 hc4053:hc4053:inp:4 hc4053:90 hc4053:90 hc4053:90 mhcnen w=35u l=2.4u ad=260p as=260p pd=70u ps=20u
+m:hc4053:hc4053:inp:p2 hc4053:hc4053:25 hc4053:hc4053:inp:4 hc4053:10 hc4053:10 mhcpen w=176u l=2.4u ad=580p as=580p pd=10u ps=200u
+m:hc4053:hc4053:inp:n2 hc4053:hc4053:25 hc4053:hc4053:inp:4 hc4053:90 hc4053:90 mhcnen w=112u l=2.4u ad=325p as=580p pd=10u ps=150u
+m:hc4053:hc4053:lc:p4 hc4053:hc4053:lc:4 hc4053:hc4053:25 hc4053:10 hc4053:10 mhcpen w=30u l=2.4u ad=120p as=120p pd=40u ps=30u
+m:hc4053:hc4053:lc:n4 hc4053:hc4053:lc:4 hc4053:hc4053:25 hc4053:90 hc4053:90 mhcnen w=15u l=2.4u ad=60p as=60p pd=20u ps=15u
+m:hc4053:hc4053:lc:p1 hc4053:hc4053:lc:5 hc4053:hc4053:lc:4 hc4053:10 hc4053:10 mhcpen w=135u l=2.4u ad=500p as=500p pd=100u ps=135u
+m:hc4053:hc4053:lc:p2 hc4053:hc4053:lc:6 hc4053:hc4053:25 hc4053:10 hc4053:10 mhcpen w=135u l=2.4u ad=500p as=500p pd=100u ps=135u
+m:hc4053:hc4053:lc:n1 hc4053:hc4053:lc:5 hc4053:hc4053:lc:6 hc4053:70 hc4053:70 mhcnen w=6.4u l=18.8u ad=25p as=25p pd=20u ps=6.4u
+m:hc4053:hc4053:lc:n2 hc4053:hc4053:lc:6 hc4053:hc4053:lc:5 hc4053:70 hc4053:70 mhcnen w=6.4u l=18.8u ad=25p as=25p pd=20u ps=6.4u
+m:hc4053:hc4053:lc:p3 hc4053:hc4053:lc:7 hc4053:hc4053:lc:6 hc4053:10 hc4053:10 mhcpen w=10u l=4.0u ad=40p as=40p pd=20u ps=10u
+m:hc4053:hc4053:lc:n3 hc4053:hc4053:lc:7 hc4053:hc4053:lc:6 hc4053:70 hc4053:70 mhcnen w=5u l=4.0u ad=20p as=20p pd=10u ps=5u
+m:hc4053:hc4053:lc:p5 hc4053:hc4053:35 hc4053:hc4053:lc:7 hc4053:10 hc4053:10 mhcpen w=30u l=2.4u ad=120p as=120p pd=40u ps=30u
+m:hc4053:hc4053:lc:n5 hc4053:hc4053:35 hc4053:hc4053:lc:7 hc4053:70 hc4053:70 mhcnen w=15u l=2.4u ad=60p as=60p pd=20u ps=15u
+m:hc4053:hc4053:as:p1 hc4053:hc4053:as:3 hc4053:hc4053:35 hc4053:10 hc4053:10 mhcpen w=88u l=2.4u ad=350p as=350p pd=100u ps=88u
+m:hc4053:hc4053:as:n1 hc4053:hc4053:as:3 hc4053:hc4053:35 hc4053:70 hc4053:70 mhcnen w=56u l=2.4u ad=225p as=225p pd=70u ps=56u
+m:hc4053:hc4053:as:p4 hc4053:hc4053:as:4 hc4053:hc4053:as:3 hc4053:10 hc4053:10 mhcpen w=350u l=2.4u ad=900p as=900p pd=200u ps=350u
+m:hc4053:hc4053:as:n4 hc4053:hc4053:as:4 hc4053:hc4053:as:3 hc4053:70 hc4053:70 mhcnen w=150u l=2.4u ad=400p as=400p pd=100u ps=150u
+m:hc4053:hc4053:as:p5 hc4053:30 hc4053:hc4053:as:4 hc4053:hc4053:as:5 hc4053:10 mhcpen w=216u l=2.4u ad=900p as=900p pd=100u ps=216u
+m:hc4053:hc4053:as:n5 hc4053:30 hc4053:hc4053:as:3 hc4053:hc4053:as:5 hc4053:hc4053:as:5 mhcnen w=108u l=2.4u ad=430p as=430p pd=50u ps=108u
+m:hc4053:hc4053:as:n6 hc4053:hc4053:as:5 hc4053:hc4053:as:4 hc4053:70 hc4053:70 mhcnen w=145u l=2.4u ad=600p as=600p pd=75u ps=145u
+m:hc4053:hc4053:as:p7 hc4053:40 hc4053:hc4053:as:4 hc4053:30 hc4053:10 mhcpen w=1068u l=2.4u ad=2500p as=2500p pd=10u ps=1068u
+m:hc4053:hc4053:as:n7 hc4053:40 hc4053:hc4053:as:3 hc4053:30 hc4053:hc4053:as:5 mhcnen w=312u l=2.4u ad=1200p as=1200p pd=10u ps=312u
+r:hc4053:pk16:1 hc4053:90 hc4053:pk16:1001 9.213e-02
+r:hc4053:pk16:2 hc4053:90 hc4053:pk16:1002 9.808e-02
+r:hc4053:pk16:3 hc4053:90 hc4053:pk16:1003 9.628e-02
+r:hc4053:pk16:4 hc4053:90 hc4053:pk16:1004 9.194e-02
+r:hc4053:pk16:5 hc4053:90 hc4053:pk16:1005 9.196e-02
+r:hc4053:pk16:6 2 hc4053:pk16:1006 9.626e-02
+r:hc4053:pk16:7 5 hc4053:pk16:1007 9.806e-02
+r:hc4053:pk16:8 0 hc4053:pk16:1008 9.209e-02
+r:hc4053:pk16:9 hc4053:90 hc4053:pk16:1009 9.214e-02
+r:hc4053:pk16:10 hc4053:90 hc4053:pk16:1010 9.806e-02
+r:hc4053:pk16:11 hc4053:90 hc4053:pk16:1011 9.627e-02
+r:hc4053:pk16:12 3 hc4053:pk16:1012 9.196e-02
+r:hc4053:pk16:13 hc4053:90 hc4053:pk16:1013 9.196e-02
+r:hc4053:pk16:14 4 hc4053:pk16:1014 9.628e-02
+r:hc4053:pk16:15 hc4053:90 hc4053:pk16:1015 9.807e-02
+r:hc4053:pk16:16 1 hc4053:pk16:1016 9.208e-02
+l:hc4053:pk16:1 hc4053:pk16:1001 hc4053:90 2.955e-09
+l:hc4053:pk16:2 hc4053:pk16:1002 hc4053:90 2.647e-09
+l:hc4053:pk16:3 hc4053:pk16:1003 hc4053:90 2.414e-09
+l:hc4053:pk16:4 hc4053:pk16:1004 hc4053:90 2.337e-09
+l:hc4053:pk16:5 hc4053:pk16:1005 hc4053:90 2.337e-09
+l:hc4053:pk16:6 hc4053:pk16:1006 hc4053:20 2.413e-09
+l:hc4053:pk16:7 hc4053:pk16:1007 hc4053:70 2.648e-09
+l:hc4053:pk16:8 hc4053:pk16:1008 hc4053:90 2.949e-09
+l:hc4053:pk16:9 hc4053:pk16:1009 hc4053:90 2.956e-09
+l:hc4053:pk16:10 hc4053:pk16:1010 hc4053:90 2.648e-09
+l:hc4053:pk16:11 hc4053:pk16:1011 hc4053:90 2.417e-09
+l:hc4053:pk16:12 hc4053:pk16:1012 hc4053:30 2.340e-09
+l:hc4053:pk16:13 hc4053:pk16:1013 hc4053:90 2.336e-09
+l:hc4053:pk16:14 hc4053:pk16:1014 hc4053:40 2.412e-09
+l:hc4053:pk16:15 hc4053:pk16:1015 hc4053:90 2.647e-09
+l:hc4053:pk16:16 hc4053:pk16:1016 hc4053:10 2.947e-09
+c1 3 0 50p
+.model mhcpen pmos level=3 kp=22.1e-6 vto=-0.71 tox=51.5e-9 nsub=3.3e16 gamma=0.92 phi=0.65 vmax=970e3 rs=80 rd=80 xj=0.63e-6 ld=0.23e-6 delta=2.24 theta=0.108 eta=0.322 kappa=0.0 wd=0.0
+.model mhcnen nmos level=3 kp=45.3e-6 vto=0.72 tox=51.5e-9 nsub=2.8e15 gamma=0.94 phi=0.65 vmax=150e3 rs=40 rd=40 xj=0.11e-6 ld=0.52e-6 delta=0.315 theta=0.054 eta=0.025 kappa=0.0 wd=0.0
+.tran 1n 180n
+.options itl4=50
+.options acct list
+.end
+
+WARNING: Less than two connections to node 2.  This node is used by R:HC4053:PK16:6.
+WARNING: Less than two connections to node 5.  This node is used by R:HC4053:PK16:7.
+WARNING: Less than two connections to node 4.  This node is used by R:HC4053:PK16:14.
+WARNING: Less than two connections to node 1.  This node is used by R:HC4053:PK16:16.
+.OP point found by inspection.
+
+Date: Sun May 16 18:33:40 2021
+Total elapsed time: 1.500 seconds.
+
+tnom = 27
+temp = 27
+method = modified trap
+totiter = 2082
+traniter = 2082
+tranpoints = 1042
+accept = 1042
+rejected = 0
+matrix size = 83
+fillins = 54
+solver = Normal
+Thread vector: 265.8/83.8[2] 140.4/29.1[2] 3.7/11.0[1] 2.4/64.8[1]  2592/500
+Matrix Compiler1: 16.15 KB object code size  12.1/9.2/[6.0]
+Matrix Compiler2: off  [2.1]/5.3/4.0
+

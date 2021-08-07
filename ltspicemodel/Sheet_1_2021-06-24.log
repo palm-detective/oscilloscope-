@@ -1,2 +1,2 @@
 Fatal Error: Unknown subcircuit called in:
-   xu1 u1_1 u1_2 vin sw r11_2 gnd -v gnd az ay ax nonet c29_1 sw sw xhc4053
+   xu2 a1 sw gnd -v u2_5 c2_1 ao v+ lmh6643max
