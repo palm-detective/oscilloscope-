@@ -1,0 +1,15 @@
+Display.c:34:6:Fill_Base	4	static
+Display.c:52:6:Buld_0	8	static
+Display.c:59:6:Buld_1	8	static
+Display.c:70:6:Buld_2	8	static
+Display.c:80:6:Buld_3	8	static
+Display.c:97:6:Buld_4	8	static
+Display.c:115:6:Draw_Digit_Analog	16	static
+Display.c:214:6:Cursor_0	16	static
+Display.c:249:6:Cursor_1	16	static
+Display.c:280:6:Cursor_2	16	static
+Display.c:306:6:Cursor_3	16	static
+Display.c:341:6:Cursor_4	16	static
+Display.c:455:6:Send_LCD	16	static
+Display.c:473:6:Draw_Pop	16	static
+Display.c:581:6:DrawWindow	16	static
