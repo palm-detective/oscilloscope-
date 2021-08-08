@@ -69,6 +69,7 @@ DMA_HandleTypeDef hdma_tim7_up;
 
 /* USER CODE BEGIN PV */
 TIM_OC_InitTypeDef octim1;
+TIM_OC_InitTypeDef octim3;
 TIM_OC_InitTypeDef octim5;
 char  APP_VERSION[] = "V2.00";   //bomp version to 2
 /* USER CODE END PV */
@@ -802,7 +803,7 @@ static void MX_TIM3_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
   /* USER CODE BEGIN TIM3_Init 1 */
-
+  octim3.Pulse = 3750;
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 11;
