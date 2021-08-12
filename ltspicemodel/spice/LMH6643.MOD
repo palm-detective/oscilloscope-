@@ -2,13 +2,13 @@
 *//////////////////////////////////////////////////////////////////////
 * (C) National Semiconductor, Corporation.
 * Models developed and under copyright by:
-* National Semiconductor, Corporation.  
+* National Semiconductor, Corporation.
 */////////////////////////////////////////////////////////////////////
-* Legal Notice:  
+* Legal Notice:
 * The model may be copied, and distributed without any modifications;
 * however, reselling or licensing the material is illegal.
-* We reserve the right to make changes to the model without prior notice. 
-* Pspice Models are provided "AS IS, WITH NO WARRANTY OF ANY KIND" 
+* We reserve the right to make changes to the model without prior notice.
+* Pspice Models are provided "AS IS, WITH NO WARRANTY OF ANY KIND"
 *////////////////////////////////////////////////////////////////////
 * PINOUT ORDER -IN +IN VCC VEE OUT
 * PINOUT ORDER  2   3   7   4   6
@@ -125,3 +125,4 @@ VCM4 64 4 -0.7
 .MODEL D3M D (IS=3E-14)
 .ENDS
 * END LMH6643 MODEL
+.end
