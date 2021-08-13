@@ -1,3 +1,3 @@
-Touch_ctl.c:15:6:Init_Touch	8	static
-Touch_ctl.c:25:6:Touch_SPI	8	static
-Touch_ctl.c:34:6:LCD_SPI	8	static
+Touch_ctl.c:15:6:Init_Touch	16	static
+Touch_ctl.c:29:6:Touch_SPI	8	static
+Touch_ctl.c:38:6:LCD_SPI	8	static

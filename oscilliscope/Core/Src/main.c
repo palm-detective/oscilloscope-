@@ -827,6 +827,8 @@ static void MX_TIM3_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM3_Init 2 */
+  HAL_TIM_OC_ConfigChannel(&htim3, &octim3, 1 );
+  __HAL_TIM_ENABLE(&htim3);
 
   /* USER CODE END TIM3_Init 2 */
 
