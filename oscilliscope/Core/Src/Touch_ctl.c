@@ -16,13 +16,9 @@ unsigned char val[2]; //input buffer
 // initialize touch screen
 void Init_Touch(void)
 {
-	unsigned char Cmd;
 	Touch_SPI();
 	HAL_GPIO_WritePin( TpCs_GPIO_Port, TpCs_Pin, GPIO_PIN_RESET);
-
-    Cmd = 0x82; //turn on adc
-	HAL_SPI_Transmit(&hspi3, &Cmd, 1, 1);// timeout 1 ms
-	HAL_SPI_Receive(&hspi3,val,2,1);   //dummy read
+// not needed yet
 	HAL_GPIO_WritePin( TpCs_GPIO_Port, TpCs_Pin, GPIO_PIN_SET);
 	LCD_SPI();
 }
@@ -45,14 +41,27 @@ void LCD_SPI(void)
 	HAL_SPI_Init(&hspi3);
 }
 
-short read_touch( unsigned char cmd )  //internal value read
+short read_2046( unsigned char cmd )  //internal value read
 {
 	short xyz;
 
 	HAL_SPI_Transmit(&hspi3, &cmd, 1, 1);// timeout 1 ms
-	HAL_SPI_Receive(&hspi3,val,2,1);   //dummy read
+	HAL_SPI_Receive(&hspi3,val,2,1);   // read value
 
 	xyz = (val[0] <<8) +val[1];
 	xyz = xyz >> 3;  //12 bit value
 	return xyz;
 }
+
+char Touch_Read(short *x, short*y)
+{
+	short z1,z2;
+	short press;
+	press =0;
+
+	z1 = read_2046(0xB0);  //read z1 cmd 8+3
+	z2 = read_2046(0xD0);  //read z2 cmd 8+5
+
+	return (press<400)?0:1;
+}
+

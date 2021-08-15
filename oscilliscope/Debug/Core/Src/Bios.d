@@ -36,7 +36,8 @@ Core/Src/Bios.o: ../Core/Src/Bios.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h \
  ../Core/Inc/main.h ../Core/Inc/Bios.h ../Core/Inc/Menu.h \
- ../Core/Inc/Process.h ../Core/Inc/Draw.h ../Core/Inc/Flash.h
+ ../Core/Inc/Process.h ../Core/Inc/Draw.h ../Core/Inc/Flash.h \
+ ../Core/Inc/Touch_ctl.h
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 
@@ -121,3 +122,5 @@ Core/Src/Bios.o: ../Core/Src/Bios.c \
 ../Core/Inc/Draw.h:
 
 ../Core/Inc/Flash.h:
+
+../Core/Inc/Touch_ctl.h:

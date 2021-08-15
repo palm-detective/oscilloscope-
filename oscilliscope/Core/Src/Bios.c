@@ -12,6 +12,7 @@
 #include "Process.h"
 #include "Draw.h"
 #include "Flash.h"
+#include "Touch_ctl.h"
 
 volatile char  Twink = 0, Blink, Key_Buffer = 0/*, TmpKeyP = 0, TmpKeyM = 0*/;
 short  KEYTIME = 0;
@@ -46,6 +47,8 @@ const short ARR[] ={ 6-1  , 6-1 ,  6-1  , 6-1 , 6-1  ,  9-1 , 18-1 , 36-1 ,  90-
               360-1, 450-1, 450-1, 900-1,1125-1,1125-1,2250-1,5625-1, 5625-1,11250-1};
 
 //----------+------+------+------+------+------+------+------+------+------+------+
+
+GPIO_PinState Touch, LastTouch =0;
 
 /*******************************************************************************
  Info :  Ӳ���豸��Ϣ
@@ -243,16 +246,40 @@ void ADC_Start(void)
 *******************************************************************************/
 void Tim3_ISP(void)
 {
+
+	char checkpress;
+	short x,y;
 //  unsigned char KeyCode;
 //  TIM3->SR = 0;                             //���жϱ�־
-  Tim_Cnt++;
 //  if(KeymS_F)KeymS_Cnt++;                  //�������ʱ
+  Tim_Cnt++;
   if(Delay_Cnt>0) Delay_Cnt--;
   if (mS_Cnt > 0)
   {
     mS_Cnt--;
     if ((mS_Cnt%20)== 0)
-    {                 //ÿ20mS��1�μ���
+    {                 //  20mS  ÿ20mS��1�μ���
+    	checkpress =0 ;
+    	Touch = HAL_GPIO_ReadPin(TpI_GPIO_Port, TpI_Pin);  //read pen
+    	if (Touch != LastTouch)
+    	{
+    	// pen changed
+    		checkpress =1; //check pressure if pen changed
+    		LastTouch = Touch;
+    	}
+    	else
+    	{
+    	  if(Touch != 0)
+    	  {
+    	    //check that press is valid
+    		checkpress =1;
+    	  }
+    	}
+
+    	if(checkpress !=0)
+    	{
+    		Touch_Read(&x,&y);
+       	}
 //      if(Key_Wait_Cnt)    Key_Wait_Cnt--;
 //      if(Key_Repeat_Cnt)  Key_Repeat_Cnt--;
 //      KeyCode = KeyScan();
@@ -269,7 +296,7 @@ void Tim3_ISP(void)
     }
   }
   else
-  {
+  {  //one second
     mS_Cnt = 1000;
 
     //----------------����----------------
