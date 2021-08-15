@@ -11,6 +11,8 @@
 
 //SPI port is left set for LCD
 
+unsigned char val[2]; //input buffer
+
 // initialize touch screen
 void Init_Touch(void)
 {
@@ -18,9 +20,9 @@ void Init_Touch(void)
 	Touch_SPI();
 	HAL_GPIO_WritePin( TpCs_GPIO_Port, TpCs_Pin, GPIO_PIN_RESET);
 
-    Cmd = 0x83; //turn on adc and ref
+    Cmd = 0x82; //turn on adc
 	HAL_SPI_Transmit(&hspi3, &Cmd, 1, 1);// timeout 1 ms
-
+	HAL_SPI_Receive(&hspi3,val,2,1);   //dummy read
 	HAL_GPIO_WritePin( TpCs_GPIO_Port, TpCs_Pin, GPIO_PIN_SET);
 	LCD_SPI();
 }
@@ -41,4 +43,16 @@ void LCD_SPI(void)
 	hspi3.Init.DataSize = SPI_DATASIZE_16BIT;
 	hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
 	HAL_SPI_Init(&hspi3);
+}
+
+short read_touch( unsigned char cmd )  //internal value read
+{
+	short xyz;
+
+	HAL_SPI_Transmit(&hspi3, &cmd, 1, 1);// timeout 1 ms
+	HAL_SPI_Receive(&hspi3,val,2,1);   //dummy read
+
+	xyz = (val[0] <<8) +val[1];
+	xyz = xyz >> 3;  //12 bit value
+	return xyz;
 }
