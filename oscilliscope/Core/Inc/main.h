@@ -112,7 +112,6 @@ void Error_Handler(void);
 #define TpCs_GPIO_Port GPIOB
 #define TpI_Pin GPIO_PIN_8
 #define TpI_GPIO_Port GPIOB
-#define TpI_EXTI_IRQn EXTI9_5_IRQn
 #define Dres_Pin GPIO_PIN_9
 #define Dres_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
