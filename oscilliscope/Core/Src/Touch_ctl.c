@@ -59,8 +59,22 @@ char Touch_Read(short *x, short*y)
 	short press;
 	press =0;
 
+	Touch_SPI();
+	HAL_GPIO_WritePin( TpCs_GPIO_Port, TpCs_Pin, GPIO_PIN_RESET);
+
 	z1 = read_2046(0xB0);  //read z1 cmd 8+3
-	z2 = read_2046(0xD0);  //read z2 cmd 8+5
+	z2 = read_2046(0xC0);  //read z2 cmd 8+4
+	press = z1 + 4095;
+	press -= z2;
+
+	if( press >= 400 )
+	{
+		*x = read_2046(0xD0);  //read x cmd 8+5
+		*y = read_2046(0x90);  //read y cmd 8+1
+	}
+
+	HAL_GPIO_WritePin( TpCs_GPIO_Port, TpCs_Pin, GPIO_PIN_SET);
+	LCD_SPI();
 
 	return (press<400)?0:1;
 }
