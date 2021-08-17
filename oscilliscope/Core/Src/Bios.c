@@ -16,7 +16,9 @@
 
 volatile char  Twink = 0, Blink, Key_Buffer = 0/*, TmpKeyP = 0, TmpKeyM = 0*/;
 short  KEYTIME = 0;
-volatile short Cursor_Cnt = 0, /*Sec_Cnt,8*/ mS_Cnt = 0, Tim_Cnt, Delay_Cnt = 0, PopupCnt = 10;
+volatile short Cursor_Cnt = 0, /*Sec_Cnt,8*/ mS_Cnt = 0, Tim_Cnt, KeymS_Cnt, Delay_Cnt = 0, PopupCnt = 10;
+unsigned char  KeymS_F = 0;
+volatile char  Key_Repeat_Cnt = 0, Key_Wait_Cnt = 0;
 
 // orginal72MHZ new 90 MHZ FPSC and PSC
 //----------+-------+-------+-------+-------+-------+-------+-------+-------+
@@ -241,6 +243,17 @@ void ADC_Start(void)
 //  DMA1_Channel1->CCR  |= 0x00000001;                 // ���¿�ʼɨ�����
 }
 
+//touchscan -- maps touch to key codes  returns 0 if no change
+char touchscan()
+{
+	short x,y;
+	char code;
+
+	code =0;
+
+	return code;
+}
+
 /*******************************************************************************
 * Tim3�жϴ������
 *******************************************************************************/
@@ -248,10 +261,10 @@ void Tim3_ISP(void)
 {
 
 	char checkpress;
-	short x,y;
-//  unsigned char KeyCode;
-//  TIM3->SR = 0;                             //���жϱ�־
-//  if(KeymS_F)KeymS_Cnt++;                  //�������ʱ
+    char KeyCode;
+
+//  TIM3->SR = 0;          //moved to main //���жϱ�־
+  if(KeymS_F)KeymS_Cnt++;                  //�������ʱ
   Tim_Cnt++;
   if(Delay_Cnt>0) Delay_Cnt--;
   if (mS_Cnt > 0)
@@ -259,7 +272,9 @@ void Tim3_ISP(void)
     mS_Cnt--;
     if ((mS_Cnt%20)== 0)
     {                 //  20mS  ÿ20mS��1�μ���
-    	checkpress =0 ;
+    	if(Key_Wait_Cnt)    Key_Wait_Cnt--;
+    	if(Key_Repeat_Cnt)  Key_Repeat_Cnt--;
+    	KeyCode = checkpress =0 ;
     	Touch = HAL_GPIO_ReadPin(TpI_GPIO_Port, TpI_Pin);  //read pen
     	if (Touch != LastTouch)
     	{
@@ -278,12 +293,10 @@ void Tim3_ISP(void)
 
     	if(checkpress !=0)
     	{
-    		Touch_Read(&x,&y);
+    		KeyCode = touchscan();
        	}
-//      if(Key_Wait_Cnt)    Key_Wait_Cnt--;
-//      if(Key_Repeat_Cnt)  Key_Repeat_Cnt--;
 //      KeyCode = KeyScan();
-//      if(KeyCode !=0) Key_Buffer = KeyCode;
+      if(KeyCode !=0) Key_Buffer = KeyCode;
 
       if(Cursor_Cnt >0)
     	  Cursor_Cnt--;

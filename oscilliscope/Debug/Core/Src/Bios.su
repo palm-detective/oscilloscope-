@@ -1,7 +1,8 @@
-Bios.c:56:10:BIOS_Info	16	static
-Bios.c:71:6:BIOS_Ctrl	40	static
-Bios.c:195:6:Set_Base	16	static
-Bios.c:207:6:Set_Duty	8	static
-Bios.c:216:6:Set_Fout	16	static
-Bios.c:228:6:ADC_Start	4	static
-Bios.c:247:6:Tim3_ISP	16	static
+Bios.c:58:10:BIOS_Info	16	static
+Bios.c:73:6:BIOS_Ctrl	40	static
+Bios.c:197:6:Set_Base	16	static
+Bios.c:209:6:Set_Duty	8	static
+Bios.c:218:6:Set_Fout	16	static
+Bios.c:230:6:ADC_Start	4	static
+Bios.c:247:6:touchscan	16	static
+Bios.c:260:6:Tim3_ISP	16	static

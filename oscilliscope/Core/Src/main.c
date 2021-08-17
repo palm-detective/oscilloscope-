@@ -1022,6 +1022,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   // Check which version of the timer triggered this callback
   if (htim == &htim3 )
   {
+//	  htim3->Instance->SR =0;
 	  Tim3_ISP();
   }
 }
