@@ -59,7 +59,7 @@ unsigned BIOS_Info(char Item)
 {
   switch (Item){
     case CHA_CNT:
-    	return /*(u16)DMA_CH_A->CNDTR*/0;
+    	return __HAL_DMA_GET_COUNTER(&hdma_adc1);  /*(u16)DMA_CH_A->CNDTR*/
 /*    case SIN_TAB: return (u32)SIN_DATA;
     case TRG_TAB: return (u32)TRG_DATA;
     case SAW_TAB: return (u32)SAW_DATA;    */
@@ -112,7 +112,7 @@ void BIOS_Ctrl(char Item, unsigned Val)
     			  __HAL_TIM_URS_DISABLE(&htim1);
     			  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
     			  HAL_TIM_Base_Init(&htim1);
-                  /* DMA_CH_A->CNDTR = (u32)Val;    */
+    			  __HAL_DMA_SET_COUNTER( &hdma_adc1, Val);  /* DMA_CH_A->CNDTR = (u32)Val;    */
                   break;
 
     case AiRANGE: if(Val & DC)
@@ -143,7 +143,9 @@ void BIOS_Ctrl(char Item, unsigned Val)
                   OUT_DMA->CMAR  = (u32)Val; */
                   break;
 
-    case OUT_CNT: /*OUT_DMA->CNDTR = (u16)Val; */    break;
+    case OUT_CNT:
+    			  __HAL_DMA_SET_COUNTER( &hdma_dac1, Val);  /*OUT_DMA->CNDTR = (u16)Val; */
+    			  break;
 
     case OUT_MOD:
       GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_MEDIUM;

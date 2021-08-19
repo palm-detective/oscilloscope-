@@ -41,6 +41,7 @@ extern SPI_HandleTypeDef hspi2;
 extern SPI_HandleTypeDef hspi3;
 extern DAC_HandleTypeDef hdac;
 extern DMA_HandleTypeDef hdma_adc1;
+extern DMA_HandleTypeDef hdma_dac1;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim7;

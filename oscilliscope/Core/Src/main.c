@@ -65,13 +65,12 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim5;
 TIM_HandleTypeDef htim7;
-DMA_HandleTypeDef hdma_tim7_up;
 
 /* USER CODE BEGIN PV */
 TIM_OC_InitTypeDef octim1;
 TIM_OC_InitTypeDef octim3;
 TIM_OC_InitTypeDef octim5;
-char  APP_VERSION[] = "V2.00";   //bomp version to 2
+char  APP_VERSION[] = "V2.00";   //bump version to 2
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -934,13 +933,10 @@ static void MX_DMA_Init(void)
 {
 
   /* DMA controller clock enable */
-  __HAL_RCC_DMA1_CLK_ENABLE();
   __HAL_RCC_DMA2_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
-  /* DMA1_Stream2_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
   /* DMA1_Stream5_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
@@ -1022,7 +1018,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   // Check which version of the timer triggered this callback
   if (htim == &htim3 )
   {
-//	  htim3->Instance->SR =0;
+	  htim->Instance->SR =0;
 	  Tim3_ISP();
   }
 }

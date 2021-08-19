@@ -1,6 +1,6 @@
 Configuration	oscilliscope
 STM32CubeMX 	6.3.0
-Date	08/15/2021
+Date	08/19/2021
 MCU	STM32F446RETx
 
 
