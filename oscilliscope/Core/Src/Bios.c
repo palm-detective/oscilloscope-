@@ -73,16 +73,17 @@ unsigned BIOS_Info(char Item)
 void BIOS_Ctrl(char Item, unsigned Val)
 {
   GPIO_InitTypeDef         GPIO_InitStructure;
+  unsigned dma_tmp;
 
   switch (Item){
     case SMPL_ST: if(Val == DISABLE)
     			  {
-                    /*DMA1_Channel1->CCR &= (~ENABLE);*/
+    				  __HAL_DMA_DISABLE(&hdma_adc1);  /*DMA1_Channel1->CCR &= (~ENABLE);*/
                   }
     			  else
     				  if(Val == ENABLE)
     				  {
-                   /* DMA1_Channel1->CCR |= ENABLE; */
+    			    __HAL_DMA_ENABLE(&hdma_adc1);  /* DMA1_Channel1->CCR |= ENABLE; */
                     __HAL_ADC_ENABLE(&hadc1);  //ADC1->CR2 |= 0x00000001; //AD_ON
                     __HAL_ADC_ENABLE(&hadc2);  //ADC2->CR2 |= 0x00000001; //AD_ON
                     __HAL_TIM_ENABLE(&htim1);  /*TIM1->CR1 = 0x0081; */
@@ -138,9 +139,14 @@ void BIOS_Ctrl(char Item, unsigned Val)
     			  break;
 
     case OUT_BUF:
-    			  /* OUT_DMA->CCR   = 0x15B0; // PL=01, M/P_SIZE=0101, M/P_INC=10, CIRC=1, DIR=1, En=0
-                  OUT_DMA->CPAR  = (u32)&DAC->DHR12R1;
-                  OUT_DMA->CMAR  = (u32)Val; */
+    // need to do this at low level
+        		  // set circular  /* OUT_DMA->CCR   = 0x15B0; // PL=01, M/P_SIZE=0101, M/P_INC=10, CIRC=1, DIR=1, En=0 */
+    			  dma_tmp = hdma_dac1.Instance->CR;
+    			  dma_tmp &= 0x0FFFFEDE;
+    			  dma_tmp |= 0x120; //set circ anf pfctrl
+				  hdma_dac1.Instance->CR = dma_tmp;
+         		  hdma_dac1.Instance->PAR = hdac.Instance->DHR12R1;  /* OUT_DMA->CPAR  = (u32)&DAC->DHR12R1; */
+        		  hdma_dac1.Instance->M0AR = Val;  /*  OUT_DMA->CMAR  = (u32)Val; */
                   break;
 
     case OUT_CNT:
@@ -151,7 +157,7 @@ void BIOS_Ctrl(char Item, unsigned Val)
       GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_MEDIUM;
       switch (Val){
                     case PULSED:
-//                                  OUT_DMA->CCR &= 0xFFFE;               //�رղ������DMA
+                                  __HAL_DMA_DISABLE(&hdma_dac1); // OUT_DMA->CCR &= 0xFFFE;               //�رղ������DMA
                     		      __HAL_DAC_DISABLE(&hdac, DAC_CHANNEL_1);
                                   GPIO_InitStructure.Pin   = Fo2_Pin;
                                   GPIO_InitStructure.Mode  = GPIO_MODE_AF_PP;
@@ -170,12 +176,12 @@ void BIOS_Ctrl(char Item, unsigned Val)
                                   GPIO_InitStructure.Mode  = GPIO_MODE_ANALOG;
                                   HAL_GPIO_Init(Fo4_GPIO_Port, &GPIO_InitStructure);
 
-//                                  OUT_DMA->CCR |= ENABLE;               //���������DMA
+                                  __HAL_DMA_ENABLE(&hdma_dac1);  // OUT_DMA->CCR |= ENABLE;               //���������DMA
                                   __HAL_DAC_ENABLE(&hdac, DAC_CHANNEL_1);
                                   break;
 
                     case DISABLE:
- //                                 OUT_DMA->CCR &= 0xFFFE;                //�رղ������DMA
+                    			  __HAL_DMA_DISABLE(&hdma_dac1);  // OUT_DMA->CCR &= 0xFFFE;                //�رղ������DMA
                     		      __HAL_DAC_DISABLE(&hdac, DAC_CHANNEL_1);
 
                                   GPIO_InitStructure.Pin   = Fo2_Pin ;
@@ -232,7 +238,7 @@ void Set_Fout(short Range)
 void ADC_Start(void)
 {
   Sampl[0]   = List[TIM_BASE].Val;         // �������ʱ����λֵ
-//  DMA1_Channel1->CCR   &= 0xFFFFFFFFE;
+  __HAL_DMA_DISABLE(&hdma_adc1);  //  DMA1_Channel1->CCR   &= 0xFFFFFFFFE;
 //  DMA1_Channel1->CMAR  = (u32)&Sampl[2];             // �����趨DMAͨ��1
   if(( List[SYNCMODE].Val == NONE|| List[SYNCMODE].Val == SCAN)
      &&( List[TIM_BASE].Val>11))
@@ -242,7 +248,7 @@ void ADC_Start(void)
      }
   else
   __HAL_DMA_SET_COUNTER(&hdma_adc1, DEPTH[List[SMPL_DPTH].Val]);//    DMA1_Channel1->CNDTR = DEPTH[List[SMPL_DPTH].Val]; // 0x00001000;
-//  DMA1_Channel1->CCR  |= 0x00000001;                 // ���¿�ʼɨ�����
+  __HAL_DMA_ENABLE(&hdma_adc1);  //  DMA1_Channel1->CCR  |= 0x00000001;                 // ���¿�ʼɨ�����
 }
 
 //touchscan -- maps touch to key codes  returns 0 if no change
