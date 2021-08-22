@@ -1,7 +1,0 @@
-Flash.c:24:7:Read_CalFlag	16	static
-Flash.c:39:7:Save_Parameter	16	static
-Flash.c:74:7:Read_Parameter	16	static
-Flash.c:101:7:Save_Kpg	16	static
-Flash.c:132:7:Read_Kpg	16	static
-Flash.c:147:7:Restore	16	static
-Flash.c:160:7:Restore_CalPar	16	static

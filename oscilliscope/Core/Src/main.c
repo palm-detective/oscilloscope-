@@ -105,6 +105,7 @@ int main(void)
   short i;
   char SAVE_FLAG = 0;
   char Pop_Num = 0;
+  unsigned dma_tmp;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -138,6 +139,19 @@ int main(void)
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
 
+  // initialize adc dma
+  __HAL_DMA_DISABLE(&hdma_adc1);
+  dma_tmp = hdma_adc1.Instance->CR;
+  dma_tmp &= 0x0FFCFFFE;
+  dma_tmp |= 0x30000; //set very high pirority
+  hdma_adc1.Instance->CR = dma_tmp;
+
+   hdma_adc1.Instance->M0AR = (unsigned)&Sampl[2];
+   hdma_adc1.Instance->PAR = hadc1.Instance->DR;
+   __HAL_DMA_SET_COUNTER(&hdma_adc1, 0x1000);
+   __HAL_DMA_ENABLE(&hdma_adc1);
+
+  // inittialize LCD and touch screen
   Init_LCD();
   Init_Touch();
 

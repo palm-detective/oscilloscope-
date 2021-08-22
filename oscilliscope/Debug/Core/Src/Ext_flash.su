@@ -1,7 +1,0 @@
-Ext_flash.c:19:6:ExtFlash_SendByte	24	static
-Ext_flash.c:42:6:ExtFlash_WaitForWriteEnd	16	static
-Ext_flash.c:62:6:ExtFlash_PageRD	24	static
-Ext_flash.c:83:6:ExtFlash_WriteEnable	8	static
-Ext_flash.c:93:6:ExtFlash_PageProg	24	static
-Ext_flash.c:116:6:ExtFLASH_SectorErase	16	static
-Ext_flash.c:128:6:ExtFlash_PageWR	296	static

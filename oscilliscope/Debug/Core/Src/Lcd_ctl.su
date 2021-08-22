@@ -1,6 +1,0 @@
-Lcd_ctl.c:16:6:lcd_write_cmd_data	16	static
-Lcd_ctl.c:29:6:Init_LCD	8	static
-Lcd_ctl.c:116:6:LCD_ClrScrn	24	static
-Lcd_ctl.c:160:6:LCD_Set_Posi	16	static
-Lcd_ctl.c:174:6:LCD_Set_Pixel	16	static
-Lcd_ctl.c:184:16:LCD_Get_Pixel	16	static

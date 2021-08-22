@@ -1,7 +1,0 @@
-Process.c:50:6:Align_Set	16	static
-Process.c:79:6:Zero_Align	8	static
-Process.c:110:6:Analys	16	static
-Process.c:128:6:AiPosi	16	static
-Process.c:137:6:WaveProcess	88	static
-Process.c:314:7:Build_Ext	24	static
-Process.c:342:6:Auto_Fit	24	static

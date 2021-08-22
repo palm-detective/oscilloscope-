@@ -143,7 +143,7 @@ void BIOS_Ctrl(char Item, unsigned Val)
         		  // set circular  /* OUT_DMA->CCR   = 0x15B0; // PL=01, M/P_SIZE=0101, M/P_INC=10, CIRC=1, DIR=1, En=0 */
     			  dma_tmp = hdma_dac1.Instance->CR;
     			  dma_tmp &= 0x0FFFFEDE;
-    			  dma_tmp |= 0x120; //set circ anf pfctrl
+    			  dma_tmp |= 0x120; //set circ and pfctrl
 				  hdma_dac1.Instance->CR = dma_tmp;
          		  hdma_dac1.Instance->PAR = hdac.Instance->DHR12R1;  /* OUT_DMA->CPAR  = (u32)&DAC->DHR12R1; */
         		  hdma_dac1.Instance->M0AR = Val;  /*  OUT_DMA->CMAR  = (u32)Val; */
@@ -239,11 +239,11 @@ void ADC_Start(void)
 {
   Sampl[0]   = List[TIM_BASE].Val;         // �������ʱ����λֵ
   __HAL_DMA_DISABLE(&hdma_adc1);  //  DMA1_Channel1->CCR   &= 0xFFFFFFFFE;
-//  DMA1_Channel1->CMAR  = (u32)&Sampl[2];             // �����趨DMAͨ��1
+  hdma_adc1.Instance->M0AR = (unsigned)&Sampl[2];//  DMA1_Channel1->CMAR  = (u32)&Sampl[2];      // �����趨DMAͨ��1
   if(( List[SYNCMODE].Val == NONE|| List[SYNCMODE].Val == SCAN)
      &&( List[TIM_BASE].Val>11))
-  {
-	  __HAL_DMA_SET_COUNTER(&hdma_adc1, 302);//       DMA1_Channel1->CNDTR  = 302;                       //10ms
+     {
+	  __HAL_DMA_SET_COUNTER(&hdma_adc1, 302);  //       DMA1_Channel1->CNDTR  = 302;                       //10ms
        List[VIEWPOSI].Val= 0;
      }
   else
