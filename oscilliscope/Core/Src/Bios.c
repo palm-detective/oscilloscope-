@@ -14,9 +14,10 @@
 #include "Flash.h"
 #include "Touch_ctl.h"
 
-volatile char  Twink = 0, Blink, Key_Buffer = 0/*, TmpKeyP = 0, TmpKeyM = 0*/;
+volatile char  Twink = 0, Blink, Key_Buffer = 0, TmpKeyP = 0, TmpKeyM = 0, TmpKeyOK = 0;
 short  KEYTIME = 0;
 volatile short Cursor_Cnt = 0, /*Sec_Cnt,8*/ mS_Cnt = 0, Tim_Cnt, KeymS_Cnt, Delay_Cnt = 0, PopupCnt = 10;
+volatile short Lastx=5000, Lasty=5000;  //  out of range values
 unsigned char  KeymS_F = 0;
 volatile char  Key_Repeat_Cnt = 0, Key_Wait_Cnt = 0;
 
@@ -251,15 +252,47 @@ void ADC_Start(void)
   __HAL_DMA_ENABLE(&hdma_adc1);  //  DMA1_Channel1->CCR  |= 0x00000001;                 // ���¿�ʼɨ�����
 }
 
+//  fuzzy equal returns 1 if close
+char fuzz( short val, short last)
+{
+	return 1;
+}
+
 //touchscan -- maps touch to key codes  returns 0 if no change
-char touchscan()
+char touchscan(void)
 {
 	short x,y;
-	char code;
+	char Code;
 
-	code =0;
+	Code =0;
+	if(Touch_Read(&x,&y)!=0)
+	{
+		if(fuzz(x,Lastx) & fuzz(y,Lasty))
+		{  //changed
 
-	return code;
+		}
+		else
+		{  //no change
+
+		}
+	}
+	else
+	{
+	      if(TmpKeyP) {Code = TmpKeyP; TmpKeyP = 0;}
+	      if(TmpKeyOK &&(KeymS_F)&& (KeymS_Cnt > KEYTIME))
+	      {
+	          Code = TmpKeyOK;
+	          TmpKeyOK  = 0;
+	          KeymS_F = 0;
+	          KeymS_Cnt = 0;
+	      }
+	      else
+	    	  if(TmpKeyM) {Code = TmpKeyM; TmpKeyM = 0;}
+	        	Key_Wait_Cnt=50;                                //���ó������� 1.0S ����
+	}
+	Lastx =x;
+	Lasty =y;
+	return Code;
 }
 
 /*******************************************************************************
