@@ -16,7 +16,7 @@
 
 volatile char  Twink = 0, Blink, Key_Buffer = 0, TmpKeyP = 0, TmpKeyM = 0, TmpKeyOK = 0;
 short  KEYTIME = 0;
-volatile short Cursor_Cnt = 0, /*Sec_Cnt,8*/ mS_Cnt = 0, Tim_Cnt, KeymS_Cnt, Delay_Cnt = 0, PopupCnt = 10;
+volatile short Cursor_Cnt = 0, mS_Cnt = 0, Tim_Cnt, KeymS_Cnt, Delay_Cnt = 0, PopupCnt = 10;
 volatile short Lastx=5000, Lasty=5000;  //  out of range values
 unsigned char  KeymS_F = 0;
 volatile char  Key_Repeat_Cnt = 0, Key_Wait_Cnt = 0;
@@ -255,39 +255,94 @@ void ADC_Start(void)
 //  fuzzy equal returns 1 if close
 char fuzz( short val, short last)
 {
-	return 1;
+	if((val/16) == (last/16))
+		return 1;
+	else
+		return 0;
 }
 
+// returns 0xff if invalad or code
+char Valid_Button(short x,short y)
+{
+	char valid;
+	valid =0xFF;
+
+	x=x/4;
+	y=y/4;
+
+	if(y<=205)  //lower screen
+	{
+		if((x>359) && (x<664))  //middle screen bottom
+			valid =KEYCODE_DOWN;
+		if((x <= 205)||(x >= 818)) //left or right screen
+			valid = KEYCODE_MANU;
+	}
+
+	if(y >= 818)  //upper screen
+	{
+		if((x>359) && (x<664))  //middle screen up
+			valid =KEYCODE_UP;
+		if((x <= 205)||(x >= 818)) //left or right screen
+			valid = KEYCODE_PLAY;
+	}
+
+	if((y>409) && (y<613))  //middle screen
+	{
+		if(x <= 306) //left screen
+			valid=KEYCODE_LEFT;
+		if(x >= 717) //right screen
+			valid=KEYCODE_RIGHT;
+	}
+
+	return valid;
+}
 //touchscan -- maps touch to key codes  returns 0 if no change
 char touchscan(void)
 {
 	short x,y;
-	char Code;
+	char Code, TmpCode;
 
 	Code =0;
 	if(Touch_Read(&x,&y)!=0)
-	{
-		if(fuzz(x,Lastx) & fuzz(y,Lasty))
-		{  //changed
+	{  // there was a touch
+		TmpCode = Valid_Button(x, y);
+		if(TmpCode != 0xFF)
+		{	//touched button area
+			if(fuzz(x,Lastx) & fuzz(y,Lasty))
+			{  //changed
 
+			}
+			else
+			{  //no change
+				if((Key_Wait_Cnt < 25)&&(Key_Repeat_Cnt == 0))
+				{ // �������� 0.5S ����
+
+				}
+				if((Key_Wait_Cnt == 0)&&(Key_Repeat_Cnt == 0))
+				{ // �������� 1.0S ����
+
+				}
+			}
 		}
 		else
-		{  //no change
-
-		}
+			return 0;
 	}
 	else
-	{
-	      if(TmpKeyP) {Code = TmpKeyP; TmpKeyP = 0;}
-	      if(TmpKeyOK &&(KeymS_F)&& (KeymS_Cnt > KEYTIME))
-	      {
-	          Code = TmpKeyOK;
-	          TmpKeyOK  = 0;
-	          KeymS_F = 0;
-	          KeymS_Cnt = 0;
-	      }
-	      else
-	    	  if(TmpKeyM) {Code = TmpKeyM; TmpKeyM = 0;}
+	{  // untouched
+	    if(TmpKeyP)
+	    {
+	    	Code = TmpKeyP;
+	    	TmpKeyP = 0;
+	    }
+	    if(TmpKeyOK &&(KeymS_F)&& (KeymS_Cnt > KEYTIME))
+	    {
+	        Code = TmpKeyOK;
+	        TmpKeyOK  = 0;
+	        KeymS_F = 0;
+	        KeymS_Cnt = 0;
+	    }
+	    else
+	    	if(TmpKeyM) {Code = TmpKeyM; TmpKeyM = 0;}
 	        	Key_Wait_Cnt=50;                                //���ó������� 1.0S ����
 	}
 	Lastx =x;
