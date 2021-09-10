@@ -17,7 +17,7 @@
 volatile char  Twink = 0, Blink, Key_Buffer = 0, TmpKeyP = 0, TmpKeyM = 0, TmpKeyOK = 0;
 short  KEYTIME = 0;
 volatile short Cursor_Cnt = 0, mS_Cnt = 0, Tim_Cnt, KeymS_Cnt, Delay_Cnt = 0, PopupCnt = 10;
-volatile short Lastx=5000, Lasty=5000;  //  out of range values
+volatile char Lastcode=0;
 unsigned char  KeymS_F = 0;
 volatile char  Key_Repeat_Cnt = 0, Key_Wait_Cnt = 0;
 
@@ -252,20 +252,11 @@ void ADC_Start(void)
   __HAL_DMA_ENABLE(&hdma_adc1);  //  DMA1_Channel1->CCR  |= 0x00000001;                 // ���¿�ʼɨ�����
 }
 
-//  fuzzy equal returns 1 if close
-char fuzz( short val, short last)
-{
-	if((val/16) == (last/16))
-		return 1;
-	else
-		return 0;
-}
-
-// returns 0xff if invalad or code
+// returns 0 if invalad or code
 char Valid_Button(short x,short y)
 {
 	char valid;
-	valid =0xFF;
+	valid =0;
 
 	x=x/4;
 	y=y/4;
@@ -300,34 +291,79 @@ char Valid_Button(short x,short y)
 char touchscan(void)
 {
 	short x,y;
-	char Code, TmpCode;
+	char Code, TmpCode, Touched;
 
-	Code =0;
-	if(Touch_Read(&x,&y)!=0)
+	TmpCode = Code =0;
+	Touched = Touch_Read(&x,&y);
+
+	if(Touched!=0)
 	{  // there was a touch
 		TmpCode = Valid_Button(x, y);
-		if(TmpCode != 0xFF)
-		{	//touched button area
-			if(fuzz(x,Lastx) & fuzz(y,Lasty))
-			{  //changed
-
-			}
-			else
-			{  //no change
-				if((Key_Wait_Cnt < 25)&&(Key_Repeat_Cnt == 0))
-				{ // �������� 0.5S ����
-
-				}
-				if((Key_Wait_Cnt == 0)&&(Key_Repeat_Cnt == 0))
-				{ // �������� 1.0S ����
-
-				}
-			}
+		if((TmpCode!=0) && (TmpCode != Lastcode))  //changed to pressed
+		{
+		    Key_Wait_Cnt   = 50;                              // ���ó������� 1.0S ����
+		    Key_Repeat_Cnt = 3;                               // �趨 60mS �Զ��ظ�����
+		    if(TmpCode == KEYCODE_PLAY)
+		    	TmpKeyP = KEYCODE_PLAY;        // KeyCode(Play/A)
+		    if(TmpCode == KEYCODE_MANU)
+		    {
+		        if(KeymS_F)
+		        {                            // OK��˫��
+		             KeymS_F = 0;                        //�������ʱ��־��KeymS_Cnt��ʱ
+		             if(KeymS_Cnt < KEYTIME)
+		             {            // KEYTIME�������������μ���Ϊ˫��
+		                  Code = KEYCODE_D_MANU;
+		             }
+		             else
+		             {
+		                  Code = KEYCODE_MANU;
+		             }
+		             KeymS_Cnt = 0;
+		        }
+		        else
+		        {                                  // OK��˫��
+		                KeymS_Cnt = 0;
+		                KeymS_F = 1;
+		                TmpKeyOK = KEYCODE_MANU;
+		        }
+		    }
+		    else
+		    {
+			    if(TmpCode != KEYCODE_PLAY)
+			    	Code = TmpCode;
+		    }
 		}
 		else
-			return 0;
+		{
+			if(TmpCode != 0)  // same press
+			{
+			      if((Key_Wait_Cnt < 25)&&(Key_Repeat_Cnt == 0))
+			      { // �������� 0.5S ����
+			    	  if((TmpCode != KEYCODE_PLAY) && (TmpCode != KEYCODE_MANU))
+			    	  {
+						  Key_Repeat_Cnt = 3;        // �趨 60mS �Զ��ظ�����
+						  Code = TmpCode;
+					  }
+			      }
+			      if((Key_Wait_Cnt == 0)&&(Key_Repeat_Cnt == 0))
+			      { // �������� 1.0S ����
+			    	  if((TmpCode == KEYCODE_PLAY) || (TmpCode == KEYCODE_MANU))
+			    	  {
+			    		  if(TmpCode == KEYCODE_PLAY)
+			    		  {
+			    			  Code = KEYCODE_ACT; TmpKeyP = 0;
+			    		  }
+			    		  if(TmpCode == KEYCODE_MANU)
+			    		  {
+			    			  Code = KEYCODE_MEM; TmpKeyM = 0;
+			    		  }
+			         	  Key_Repeat_Cnt = 50;       //�趨 1.0S �Զ��ظ�����
+			    	  }
+			      }
+			}
+		}
 	}
-	else
+	if((Touched == 0)||((TmpCode == 0) && (TmpCode == Lastcode)))
 	{  // untouched
 	    if(TmpKeyP)
 	    {
@@ -345,8 +381,7 @@ char touchscan(void)
 	    	if(TmpKeyM) {Code = TmpKeyM; TmpKeyM = 0;}
 	        	Key_Wait_Cnt=50;                                //���ó������� 1.0S ����
 	}
-	Lastx =x;
-	Lasty =y;
+	Lastcode = TmpCode;
 	return Code;
 }
 
