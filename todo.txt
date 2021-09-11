@@ -1,7 +1,10 @@
 08/22/2021  add touch buttons
             fix routing on pcb
             use 0402 components rather than 0603
-            finish simulation
+
+09/11/2021  finish simulation
+            software test
 
 future	    use rspberry pi 4 format -- usb c
-	    sigroc interface
+	    add pulseview interface
+            add sd card
