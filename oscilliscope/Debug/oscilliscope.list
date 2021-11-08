@@ -23,7 +23,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   9 .bss          00006dd0  20000760  08023990  00040760  2**2
                   ALLOC
- 10 ._user_heap_stack 00000e00  20007530  08023990  00047530  2**0
+ 10 ._user_heap_stack 00002000  20007530  08023990  00047530  2**0
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  00040760  2**0
                   CONTENTS, READONLY
@@ -24623,9 +24623,9 @@ static void MX_SPI2_Init(void)
  8017ae2:	4b0c      	ldr	r3, [pc, #48]	; (8017b14 <MX_SPI2_Init+0x64>)
  8017ae4:	2200      	movs	r2, #0
  8017ae6:	61da      	str	r2, [r3, #28]
-  hspi2.Init.FirstBit = SPI_FIRSTBIT_LSB;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
  8017ae8:	4b0a      	ldr	r3, [pc, #40]	; (8017b14 <MX_SPI2_Init+0x64>)
- 8017aea:	2280      	movs	r2, #128	; 0x80
+ 8017aea:	2200      	movs	r2, #0
  8017aec:	621a      	str	r2, [r3, #32]
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
  8017aee:	4b09      	ldr	r3, [pc, #36]	; (8017b14 <MX_SPI2_Init+0x64>)
@@ -24705,9 +24705,9 @@ static void MX_SPI3_Init(void)
  8017b50:	4b0c      	ldr	r3, [pc, #48]	; (8017b84 <MX_SPI3_Init+0x68>)
  8017b52:	2210      	movs	r2, #16
  8017b54:	61da      	str	r2, [r3, #28]
-  hspi3.Init.FirstBit = SPI_FIRSTBIT_LSB;
+  hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
  8017b56:	4b0b      	ldr	r3, [pc, #44]	; (8017b84 <MX_SPI3_Init+0x68>)
- 8017b58:	2280      	movs	r2, #128	; 0x80
+ 8017b58:	2200      	movs	r2, #0
  8017b5a:	621a      	str	r2, [r3, #32]
   hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
  8017b5c:	4b09      	ldr	r3, [pc, #36]	; (8017b84 <MX_SPI3_Init+0x68>)
@@ -26710,7 +26710,7 @@ void *_sbrk(ptrdiff_t incr)
  8018690:	46bd      	mov	sp, r7
  8018692:	bd80      	pop	{r7, pc}
  8018694:	20020000 	.word	0x20020000
- 8018698:	00000600 	.word	0x00000600
+ 8018698:	00001000 	.word	0x00001000
  801869c:	200007b0 	.word	0x200007b0
  80186a0:	20007530 	.word	0x20007530
 
