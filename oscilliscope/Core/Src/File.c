@@ -6,8 +6,9 @@
  */
 
 #include "File.h"
+#include "ff.h"
+#include "fatfs.h"
 #include "Menu.h"
-#include "fat12.h"
 #include "Func.h"
 #include "Process.h"
 #include "Draw.h"
@@ -103,7 +104,7 @@ void PrintClk(short x0, short y0, char Phase)
 void WriteVar(short Var, short* pClu)
   {
     short temp_addr,temp_len;
-    short Buf_len = 4096;
+    unsigned j;
 
     memset(Num, 0, 4);
     u16ToDec4Str(Num,Var);
@@ -111,13 +112,14 @@ void WriteVar(short Var, short* pClu)
     memcpy(&F_Buff[Addr], Num, Length);
     Addr = Addr + Length;
     Svg_Cnt = Svg_Cnt+ Length;
-    if(Addr >=Buf_len){
-      if(ProgFileSec(F_Buff, pClu)!= OK) {}; // д������
+    if(Addr >=4096)
+    {
+      f_write(&USERFile, F_Buff, 4096, &j);
       PrintClk(264,2,(Clk_Cnt++ >>1)& 3);  // ����ָʾ
-      temp_len = Addr -Buf_len;
+      temp_len = Addr -4096;
       temp_addr = Length - temp_len;
       Addr = 0;
-      memset(F_Buff,0,Buf_len);
+      memset(F_Buff,0,4096);
       memset(Data,0,310);
       memcpy(&F_Buff[Addr],Num + temp_addr, temp_len);
       Addr = Addr + temp_len;
@@ -131,19 +133,20 @@ void WriteVar(short Var, short* pClu)
 void WriteStr(char* Str, short* pClu)
   {
     short temp_addr,temp_len;
-    short Buf_len = 4096;
+    unsigned j;
 
     Length = strlen((char const*)Str);
     memcpy(&F_Buff[Addr], Str, Length);
     Addr = Addr + Length;
     Svg_Cnt = Svg_Cnt+ Length;
-    if(Addr >=Buf_len){
-      if(ProgFileSec(F_Buff, pClu)!= OK) {}; // д������
+    if(Addr >=4096)
+    {
+        f_write(&USERFile, F_Buff, 4096, &j);
       PrintClk(264,2,(Clk_Cnt++ >>1)& 3);     // ����ָʾ
-      temp_len = Addr -Buf_len;
+      temp_len = Addr -4096;
       temp_addr = Length - temp_len;
       Addr = 0;
-      memset(F_Buff,0,Buf_len);
+      memset(F_Buff,0,4096);
       memset(Data,0,310);
       memcpy(&F_Buff[Addr],Str + temp_addr, temp_len);
       Addr = Addr + temp_len;
@@ -169,63 +172,34 @@ Load_File_Num(char Tpye)
 short Load_File_Num(char Type)
 {
   short FileNo=0;
-  char  pFileName[12]="FILE       ";
-  short pCluster[3];
-  unsigned pDirAddr;
+  char  pFileName[13]="FILE       ";
 
   switch(Type)
   {
   case SAVE_BMP:
-    memset(F_Buff,0,4096);
-    memcpy(pFileName,"IMG_    BMP",12);
-    Make_Filename(FileNo, pFileName);
-    while(OpenFileRd(F_Buff, pFileName, pCluster, &pDirAddr)==OK)
-    {
-      FileNo++;
-      Make_Filename(FileNo, pFileName);
-    }
+    memcpy(pFileName,"IMG_   .BMP",12);
     break;
   case SAVE_DAT:
-    memset(F_Buff,0,4096);
-    memcpy(pFileName,"FILE    DAT",12);
-    Make_Filename(FileNo, pFileName);
-    while(OpenFileRd(F_Buff, pFileName, pCluster, &pDirAddr)==OK)
-    {
-      FileNo++;
-      Make_Filename(FileNo, pFileName);
-    }
+    memcpy(pFileName,"FILE   .DAT",12);
     break;
   case SAVE_BUF:
-    memset(F_Buff,0,4096);
-    memcpy(pFileName,"DATA    BUF",12);
-    Make_Filename(FileNo, pFileName);
-    while(OpenFileRd(F_Buff, pFileName, pCluster, &pDirAddr)==OK)
-    {
-      FileNo++;
-      Make_Filename(FileNo, pFileName);
-    }
+    memcpy(pFileName,"DATA   .BUF",12);
     break;
   case SAVE_CSV:
-    memset(F_Buff,0,4096);
-    memcpy(pFileName,"DATA    CSV",12);
-    Make_Filename(FileNo, pFileName);
-    while(OpenFileRd(F_Buff, pFileName, pCluster, &pDirAddr)==OK)
-    {
-      FileNo++;
-      Make_Filename(FileNo, pFileName);
-    }
+    memcpy(pFileName,"DATA   .CSV",12);
     break;
   case SAVE_SVG:
-    memset(F_Buff,0,4096);
-    memcpy(pFileName,"DATA    SVG",12);
+    memcpy(pFileName,"DATA   .SVG",12);
+    break;
+  }
     Make_Filename(FileNo, pFileName);
-    while(OpenFileRd(F_Buff, pFileName, pCluster, &pDirAddr)==OK)
+    while( f_open( &USERFile, pFileName, FA_OPEN_EXISTING)==FR_OK)
     {
+      f_close(&USERFile);
       FileNo++;
       Make_Filename(FileNo, pFileName);
     }
-    break;
-  }
+
   return FileNo;
 }
 
@@ -262,22 +236,31 @@ Load_Buf: ���ر�����Ĳɼ����ݻ�����    ���
 *******************************************************************************/
 char Load_Buf(short FileNo)
 {
-  char pFileName[12]="DATA    BUF";
-  short pCluster[3];
-  unsigned pDirAddr[1];
+  char pFileName[13]="DATA   .BUF";
   short *ptr;
-  int i,Rvalue=1;
-  int n,k;
+  int i,Rvalue,n;
+  unsigned j;
 
   Make_Filename(FileNo, pFileName);
-  if( (Rvalue=OpenFileRd(F_Buff, pFileName, pCluster, pDirAddr))!= OK) return Rvalue;
-    n=2;k=4096;
-  if(List[SMPL_DPTH].Val==3) n =4 ;//8K
-  for(i=0;i<n;i++){
-    if(ReadFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR;
-    memcpy(&(Sampl[i*k/2+2]),F_Buff,k);
-	}
-  if(ReadFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR;
+
+  Rvalue =f_open( &USERFile, pFileName, FA_OPEN_EXISTING |FA_READ );
+  if(Rvalue !=FR_OK)
+	  return Rvalue;
+  n=2;
+  if(List[SMPL_DPTH].Val==3)
+	  n =4 ;//8K
+  for(i=0;i<n;i++)
+  {
+    if(f_read(&USERFile, F_Buff, 4096, &j)!= FR_OK)
+    	return FILE_RW_ERR;
+    if(j != 4096)
+    	return FILE_RW_ERR;
+    memcpy(&(Sampl[i*4096/2+2]),F_Buff,4096);
+  }
+  if(f_read(&USERFile, F_Buff, 4096, &j)!= FR_OK)
+  	return FILE_RW_ERR;
+  f_close(&USERFile);
+
   ptr=(short*)F_Sector;                               //�����ֳ�
   *ptr++=0xaa55;
   *ptr++=Sampl[0];
@@ -293,7 +276,8 @@ char Load_Buf(short FileNo)
   List[SMPL_DPTH].Val=*ptr++;
   Status |=  STOP;
   DispStatus();
-  if(List[LOAD_BUF].Val<99)List[LOAD_BUF].Val++;
+  if(List[LOAD_BUF].Val<99)
+	  List[LOAD_BUF].Val++;
   return 0;
 }
 
@@ -302,37 +286,38 @@ Save_Buf: ����ɼ����ݻ�����ΪBUF��ʽ    ����
 *******************************************************************************/
 char Save_Buf(short FileNo)
 {
-  char pFileName[12]="DATA    BUF";
-  short pCluster[3];
-  int pDirAddr[1];
-  int i=0, Rvalue=DISK_RW_ERR;
+  char pFileName[13]="DATA   .BUF";
+  int i;
   short *p;
   char  l=0;
-  short n,k;
+  short n;
+  unsigned j;
 
-   n=2; k=4096;
+  n=2;
 
   if(List[SMPL_DPTH].Val==3) n =4 ;//8K
 
   Make_Filename(FileNo, pFileName);
-  memset(F_Buff,0,4096);
-  if(OpenFileWr(F_Buff, pFileName, pCluster, pDirAddr)!=OK) return Rvalue;
+  if(f_open(&USERFile, pFileName, FA_OPEN_ALWAYS | FA_WRITE | FA_READ)!=FR_OK)
+	  return DISK_RW_ERR;
 
-  for(i=0; i<n; i++){
-    memcpy(F_Buff,&(Sampl[i*k/2+2]),k);
-    if(ProgFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR; // д������
+  for(i=0; i<n; i++)
+  {
+    memcpy(F_Buff,&(Sampl[i*4096/2+2]),4096);
+    if(f_write( &USERFile, F_Buff, 4096, &j)!= FR_OK) return FILE_RW_ERR; // д������
     PrintClk(264,2,(l++ >>1) & 3);                    // ����ָʾ
   }
-  memset(F_Buff,0,k);
+  memset(F_Buff,0,4096);
   p =(short*)&F_Buff;
   *p++=Sampl[0];
   *p++=Sampl[1];
   *p++=List[Y_RANGES].Val;
   *p++=List[PROBEATT].Val;
   *p++=List[SMPL_DPTH].Val;
-  if(ProgFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR; // д������
-  if(CloseFile(F_Buff, 16*512+k, pCluster, pDirAddr)!= OK) return FILE_RW_ERR;
-  if(List[SAVE_BUF].Val<99)List[SAVE_BUF].Val++;
+  if(f_write( &USERFile, F_Buff, 12, &j)!= FR_OK) return FILE_RW_ERR; // д������
+  f_close(&USERFile);
+  if(List[SAVE_BUF].Val<99)
+	  List[SAVE_BUF].Val++;
   return OK;
 }
 
@@ -341,13 +326,13 @@ Save_Dat: ���浱ǰ��Ļ��ʾͼ��ԭʼ����    ���룺
 *******************************************************************************/
 char Save_Dat(short FileNo)
 {
-  char pFileName[12]="FILE    DAT";
-  short Rvalue=DISK_RW_ERR ;
-  short pCluster[3];
-  int pDirAddr[1];
+  char pFileName[13]="FILE   .DAT";
+  unsigned j;
+
   Make_Filename(FileNo, pFileName);
   memset(F_Buff,0,4096);
-  if(OpenFileWr(F_Buff, pFileName, pCluster, pDirAddr)!=OK) return Rvalue;
+  if(f_open(&USERFile, pFileName, FA_OPEN_ALWAYS | FA_WRITE | FA_READ)!=FR_OK)
+	  return DISK_RW_ERR;
   F_Buff[0]  = 1;              //Ver0001
   F_Buff[1]  = List[V0_POSI].Val;
   F_Buff[2]  = List[EXT_POSI].Val;
@@ -358,8 +343,8 @@ char Save_Dat(short FileNo)
   F_Buff[7]  = List[TR_MODE].Val;
 
   memcpy(&F_Buff[10], WaveBuf, 300);
-  if(ProgFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR; // д������
-  if(CloseFile(F_Buff, 512, pCluster, pDirAddr)!= OK) return FILE_RW_ERR;
+  if(f_write( &USERFile, F_Buff, 310, &j)!= FR_OK) return FILE_RW_ERR; // д������
+  f_close(&USERFile);
   if(List[SAVE_DAT].Val<99)List[SAVE_DAT].Val++;
   return OK;
 }
@@ -369,15 +354,22 @@ Load_Dat: ���ر��������Ļͼ��ԭʼ����    ��
 *******************************************************************************/
 char Load_Dat(short FileNo)
 {
-  char pFileName[12]="FILE    DAT";
-  short pCluster[3];
-  unsigned pDirAddr[1];
-  short  Rvalue=0;
+  char pFileName[13]="FILE   .DAT";
+  short  Rvalue;
   int i;
+  unsigned j;
 
   Make_Filename(FileNo, pFileName);
-  if((Rvalue=OpenFileRd(F_Buff, pFileName, pCluster, pDirAddr))!= OK) return Rvalue;
-  if(ReadFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR;
+
+  Rvalue =f_open( &USERFile, pFileName, FA_OPEN_EXISTING |FA_READ );
+  if(Rvalue !=FR_OK)
+	  return Rvalue;
+
+  if(f_read(&USERFile, F_Buff, 310, &j)!= FR_OK)
+   	return FILE_RW_ERR;
+   if(j != 310)
+   	return FILE_RW_ERR;
+
   memcpy(Data, F_Buff, 310);
 
   List[TIM_BASE].Val = F_Buff[3];
@@ -401,58 +393,66 @@ Save_Bmp: ���浱ǰ��Ļ��ʾͼ��ΪBMP��ʽ    ���룺�
 *******************************************************************************/
 char Save_Bmp(short FileNo)
 {
-  char  pFileName[12]="IMG_    BMP";
-  short pCluster[3];
-  int pDirAddr[1];
-  int Rvalue=DISK_RW_ERR;
+  char  pFileName[13]="IMG_   .BMP";
   short x, y, i=54, j,ColorH,ColorL ;
   short k=0, l=0;
-  int length;
+  unsigned m;
 
-  length=4096;
-
-  //USB_Connect(DISABLE);
-
-  if(Current == FN){
+  if(Current == FN)
+  {
     Close_Pop();
     DrawWindow(WaveBuf, ParamTab);
   }
   Make_Filename(FileNo, pFileName);
-  if(OpenFileWr(F_Buff, pFileName, pCluster, pDirAddr)!=OK) return Rvalue;
+
+  if(f_open(&USERFile, pFileName, FA_OPEN_ALWAYS | FA_WRITE | FA_READ)!=FR_OK)
+	  return DISK_RW_ERR;
   memcpy(F_Buff, BmpHead, 54);
   i = 0x0036;                                     // ��ɫ���ſ�ʼ��ַ
-  for(j=0; j<16; ++j){
+  for(j=0; j<16; ++j)
+  {
     F_Buff[j*4 +i+0]=(BMP_Color[j] & 0xF800)>>8;  // Bule
     F_Buff[j*4 +i+1]=(BMP_Color[j] & 0x07E0)>>3;  // Green&
     F_Buff[j*4 +i+2]=(BMP_Color[j] & 0x001F)<<3;  // Red
     F_Buff[j*4 +i+3]= 0;                          // Alpha
   }
   i = 0x0076;                                     // ͼ�����ݿ�ʼ��ŵ�ַ
-  for(y=0; y<240; y++){
-    for(x=0; x<320 ; x+=2){
+  for(y=0; y<240; y++)
+  {
+    for(x=0; x<320 ; x+=2)
+    {
       LCD_Set_Posi(x, y);
       ColorH = LCD_Get_Pixel();
       LCD_Set_Posi(x+1, y);
       ColorL = LCD_Get_Pixel();
       F_Buff[i] =(Color_Num(ColorH)<<4)+ Color_Num(ColorL);
       i++;
-      if(i>=length){
+      if(i>=4096)
+      {
         i=0;
-        if(ProgFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR; // д������
-        if(l==0)PrintClk(168,2,(k++ >>1)& 3);         // ����ָʾ
+        if(f_write( &USERFile, F_Buff, 4096, &m)!= FR_OK) return FILE_RW_ERR; // д������
+        if(l==0)
+        	PrintClk(168,2,(k++ >>1)& 3);         // ����ָʾ
         l++;
         if(l>=2)l=0;
       }
     }
   }
-  if(i!=0){
-      if(ProgFileSec(F_Buff, pCluster)!= OK){List_Pop();return FILE_RW_ERR;} // д������
-    }
-  if(CloseFile(F_Buff, 76*512, pCluster, pDirAddr)!= OK) return FILE_RW_ERR;
-  if(Current == FN)List_Pop();
-  if(List[SAVE_BMP].Val<99)List[SAVE_BMP].Val++;
+  if(i!=0)
+  {
+      if(f_write( &USERFile, F_Buff, i, &m)!= FR_OK)
+      {
+    	  List_Pop();
+    	  return FILE_RW_ERR;
+      } // д������
+  }
+  if(f_close(&USERFile)!= FR_OK )
+	  return FILE_RW_ERR;
+  if(Current == FN)
+	  List_Pop();
+  if(List[SAVE_BMP].Val<99)
+	  List[SAVE_BMP].Val++;
 
-//  USB_Connect(ENABLE);
   return OK;
 }
 
@@ -464,20 +464,18 @@ char Save_Csv(short FileNo)
 
   int Ak = (KgA[KindA+(StateA?1:0)]*4)/GK[GainA];
 
-  char pFileName[12]="DATA    CSV";
-  short pCluster[3];
-  int pDirAddr[1];
-  int i,k=0,l=0,Rvalue=DISK_RW_ERR,length;
+  char pFileName[13]="DATA   .CSV";
+  short i,k=0,l=0;
+  unsigned j;
   char Num[4],track[4];
   short temp;
   short count;
   char* ptr;
   char* buf;
 
-  length=4096;
-
   Make_Filename(FileNo, pFileName);
-  if(OpenFileWr(F_Buff, pFileName, pCluster, pDirAddr)!=OK) return Rvalue;
+  if(f_open(&USERFile, pFileName, FA_OPEN_ALWAYS | FA_WRITE | FA_READ)!=FR_OK)
+	  return DISK_RW_ERR;
   memcpy(&F_Buff[0],TimeBase_Str[List[TIM_BASE].Val],5);
   memcpy(&F_Buff[5],"   ",3);
   buf=&F_Buff[8];
@@ -497,52 +495,48 @@ char Save_Csv(short FileNo)
   k=8+count;
   memcpy(&F_Buff[k],"\r\n",2);
   k+=2;
-  for(i=0; i<DEPTH[List[SMPL_DPTH].Val]; i++){
-
+  for(i=0; i<DEPTH[List[SMPL_DPTH].Val]; i++)
+  {
     temp = ((((Sampl[2+i])-2048)*Ak)>>12)+100;
 
-    if(temp > 0){
+    if(temp > 0)
+    {
       if(temp > 200)  track[0] = 199;
       else            track[0] = temp;
     } else            track[0] = 0;
     u8ToDec3(Num,track[0]);
-    for(count=0; count<3; count++){
+    for(count=0; count<3; count++)
+    {
       if(Num[count] == 0) break;
       F_Buff[k++] = Num[count];
-      if(k >= length){
-        if(ProgFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR; // д������
+      if(k >= 4096)
+      {
+        if(f_write( &USERFile, F_Buff, 4096, &j)!= FR_OK) return FILE_RW_ERR; // д������
         PrintClk(264,2,(l++ >>1) & 3);                    // ����ָʾ
         k = 0;
       }
     }
     F_Buff[k++] = 0x2c;
-    if(k >= length){
-      if(ProgFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR; // д������
-      PrintClk(264,2,(l++ >>1)& 3);                    // ����ָʾ
-      k = 0;
-    }
     F_Buff[k++] = 0x0d;
-    if(k >= length){
-      if(ProgFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR; // д������
-      PrintClk(264,2,(l++ >>1)& 3);                    // ����ָʾ
-      k = 0;
-    }
     F_Buff[k++] = 0x0a;
-    if(k >= length){
-      if(ProgFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR; // д������
+    if(k >= 4096)
+    {
+      if(f_write( &USERFile, F_Buff, 4096, &j)!= FR_OK) return FILE_RW_ERR; // д������
       PrintClk(264,2,(l++ >>1)& 3);                    // ����ָʾ
-      k = 0;
+      k = k - 4096;
+      memcpy(&F_Buff[k], &F_Buff[k+4096], k);
     }
   }
-  if(k != 0){
+  if(k != 0)
+  {
     F_Buff[k++]=0x0d;
     F_Buff[k++]=0x0a;
     memset(&F_Buff[k],32,(4096-k)); //32->�ո�
-    k=0;
-    if(ProgFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR; // д������
+    if(f_write( &USERFile, F_Buff, 4096, &j)!= FR_OK) return FILE_RW_ERR; // д������
     PrintClk(264,2,(l++ >>1)& 3);                     // ����ָʾ
   }
-  if(CloseFile(F_Buff, l*length, pCluster, pDirAddr)!= OK) return DISK_RW_ERR;
+  if(f_close(&USERFile)!= FR_OK )
+	  return FILE_RW_ERR;
   if(List[SAVE_CSV].Val<99)List[SAVE_CSV].Val++;
   return OK;
 }
@@ -552,28 +546,25 @@ Save_Svg: ����ɼ����ݻ�����ΪBUF��ʽ    ����
 *******************************************************************************/
 char Save_Svg(short FileNo)
 {
-  char pFileName[12]="DATA    SVG";
+  char pFileName[13]="DATA   .SVG";
   short pCluster[3];
-  int pDirAddr[1];
   short track[4];
-  int Rvalue = DISK_RW_ERR;
   int l = 0;
-  short Buf_len = 4096;
   short i,x, y;
   short temp;
   char  *str;
   short Posi1 = 0;
   int Ak = (KgA[KindA+(StateA?1:0)]*4)/GK[GainA];
-
+  unsigned j;
 
   Svg_Cnt = 0;
   Addr = 0, Length = 0;
   str = (char*)&Data;
-  //__USB_Port(DISABLE);
   memset(Data,0,310);
-  memset(F_Buff,0,Buf_len);
+  memset(F_Buff,0,4096);
   Make_Filename(FileNo, pFileName);
-  if(OpenFileWr(F_Buff, pFileName, pCluster, pDirAddr)!=OK) return Rvalue;
+  if(f_open(&USERFile, pFileName, FA_OPEN_ALWAYS | FA_WRITE | FA_READ)!=FR_OK)
+	  return DISK_RW_ERR;
   //SVG �ĵ���ĳЩ��������SVG ,ָ���ⲿ��DTD
   str = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n";
   WriteStr(str, pCluster);
@@ -615,7 +606,8 @@ char Save_Svg(short FileNo)
     str = "\"/>\n";
     WriteStr(str, pCluster);
   }
-  for (x=0; x<=DEPTH[List[SMPL_DPTH].Val]; x+=25){
+  for (x=0; x<=DEPTH[List[SMPL_DPTH].Val]; x+=25)
+  {
     //<path stroke="#404040" d="M0,0 V256"/>
     str = "<path stroke=\"#404040\" d=\"M";
     WriteStr(str, pCluster);
@@ -626,9 +618,11 @@ char Save_Svg(short FileNo)
   //ͨ��A����
   str = "<path stroke=\"cyan\" fill=\"none\" stroke-width=\"1\" d=\"";
   WriteStr(str, pCluster);
-  for (i=0; i<=DEPTH[List[SMPL_DPTH].Val]; i++){
+  for (i=0; i<=DEPTH[List[SMPL_DPTH].Val]; i++)
+  {
       temp = ((((Sampl[2+i])-2048)*Ak)>>12)+100;
-    if(temp > 0){
+    if(temp > 0)
+    {
       if(temp > 200)  track[0] = 199;
       else            track[0] = temp;
     } else            track[0] = 0;
@@ -735,13 +729,12 @@ char Save_Svg(short FileNo)
   WriteStr(str, pCluster);
   str = "</svg>\n";
   WriteStr(str, pCluster);
-  if(ProgFileSec(F_Buff, pCluster)!= OK) return FILE_RW_ERR; // д������
+  if(f_write( &USERFile, F_Buff, Length, &j)!= FR_OK) return FILE_RW_ERR; // д������
   PrintClk(264,2,(l++ >>1)& 3);                               // ����ָʾ
 
-  if(CloseFile(F_Buff, Svg_Cnt, pCluster, pDirAddr)!= OK)
-    return DISK_RW_ERR;
+  if(f_close(&USERFile)!= FR_OK )
+	  return FILE_RW_ERR;
   if(List[SAVE_SVG].Val<99)List[SAVE_SVG].Val++;
-  //__USB_Port(ENABLE);
   memset(Data,0,310);
   return OK;
 }

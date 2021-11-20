@@ -23,7 +23,7 @@
 #include "usbd_storage_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-#include "Ext_flash.h"
+#include "W25QXX.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -192,8 +192,8 @@ int8_t STORAGE_Init_FS(uint8_t lun)
 int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_size)
 {
   /* USER CODE BEGIN 3 */
-  *block_num  = STORAGE_BLK_NBR;
-  *block_size = STORAGE_BLK_SIZ;
+	  *block_num  = W25Qx_Para.SUBSECTOR_COUNT;
+	  *block_size = W25Qx_Para.SUBSECTOR_SIZE;
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -230,7 +230,13 @@ int8_t STORAGE_IsWriteProtected_FS(uint8_t lun)
 int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 6 */
-	ExtFlash_PageRD( (char *)buf, blk_addr*STORAGE_BLK_SIZ, blk_len);
+	short i;
+	for(i = 0; i < blk_len; i ++)
+	{
+		W25Qx_Read(buf, blk_addr*W25Qx_Para.SUBSECTOR_SIZE, W25Qx_Para.SUBSECTOR_SIZE);
+		blk_addr ++;
+		buf += W25Qx_Para.SUBSECTOR_SIZE;
+	}
   return (USBD_OK);
   /* USER CODE END 6 */
 }
@@ -243,7 +249,14 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 7 */
-	ExtFlash_PageWR( (char *)buf, blk_addr*STORAGE_BLK_SIZ);
+	short i;
+	for(i = 0; i < blk_len; i ++)
+	{
+		W25Qx_Erase_Block(blk_addr * W25Qx_Para.SUBSECTOR_SIZE);
+		W25Qx_Write((uint8_t*)buf,blk_addr * W25Qx_Para.SUBSECTOR_SIZE,W25Qx_Para.SUBSECTOR_SIZE);
+		blk_addr ++;
+		buf += W25Qx_Para.SUBSECTOR_SIZE;
+	}
 	return (USBD_OK);
   /* USER CODE END 7 */
 }

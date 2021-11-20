@@ -1,4 +1,4 @@
-Configuration	oscilliscope
+Configuration	scopefat
 STM32CubeMX 	6.3.0
 Date	11/08/2021
 MCU	STM32F446RETx
@@ -119,8 +119,8 @@ Pin Nb	PINs	FUNCTIONs	LABELs
 SOFTWARE PROJECT
 
 Project Settings : 
-Project Name : oscilliscope
-Project Folder : C:\Users\paul_\Documents\GitHub\oscilloscope-\oscilliscope
+Project Name : scopefat
+Project Folder : C:\Users\paul_\Documents\scopefat
 Toolchain / IDE : STM32CubeIDE
 Firmware Package Name and Version : STM32Cube FW_F4 V1.26.2
 
