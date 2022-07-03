@@ -1,0 +1,13 @@
+Size:85mm x 56mm
+Signal Layers:2
+None Signal Layers:17
+Components:69
+Pads:267
+  Surface Pads:233
+  Plated Through-hole Pads:34
+  None Plated Through-hole Pads:0
+Holes:6
+Vias:66
+Nets:53/53
+Length of Tracks:1909.68mm
+Copper Areas:0
