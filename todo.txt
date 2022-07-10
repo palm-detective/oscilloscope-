@@ -1,6 +1,6 @@
-08/22/2021  add touch buttons
-            fix routing on pcb
-            use 0402 components rather than 0603
+08/22/2021  add touch buttons DONE
+            fix routing on pcb DONE
+            use 0402 components rather than 0603 DONE
 
 09/11/2021  finish simulation
             software test

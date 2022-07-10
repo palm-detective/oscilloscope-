@@ -16,7 +16,7 @@
 
 char  Cal_Flag = 1;  //not callibrated
 short TIM_BASE_Val;
-unsigned short F_Buff[128];
+unsigned short Flash_Buff[128];
 unsigned long err;
 
 FLASH_EraseInitTypeDef Flash_Erase ={0, 1, 1, 1, 2};
@@ -47,7 +47,7 @@ FLASH_EraseInitTypeDef Flash_Erase ={0, 1, 1, 1, 2};
    j=HAL_FLASHEx_Erase( &Flash_Erase, &err);
    if(j== HAL_OK)
    {
-     ptr=F_Buff;
+     ptr=Flash_Buff;
      *ptr++=0x0400;                              //Ver:4.00
      *ptr++=Current;
      *ptr++=Status;
@@ -56,7 +56,7 @@ FLASH_EraseInitTypeDef Flash_Erase ={0, 1, 1, 1, 2};
      for(i=0;i<8;i++)
     	 *ptr++=MenuNow[i];
      *ptr++=0xaa55;
-     ptr=F_Buff;
+     ptr=Flash_Buff;
      for(i=0; i<256; i+=2)
      {                      //128 SHORT
        j= HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, Page_Address+i, *ptr++);
@@ -109,13 +109,13 @@ FLASH_EraseInitTypeDef Flash_Erase ={0, 1, 1, 1, 2};
    j=HAL_FLASHEx_Erase( &Flash_Erase, &err);
    if(j== HAL_OK)
    {
-     ptr=F_Buff;
+     ptr=Flash_Buff;
      *ptr++=0xaa55;
      *ptr++=0x0400;                              //Ver:3.00
      *ptr++=Cal_Flag;
      for(i=0;i<3;i++)
     	 *ptr++=Kpg[i];
-     ptr=F_Buff;
+     ptr=Flash_Buff;
      for(i=0; i<256; i+=2)
      {                      //128 SHORT
        j= HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, Kpg_Address+i, *ptr++);
