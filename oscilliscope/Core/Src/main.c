@@ -1009,15 +1009,15 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(Fo2_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Az_Pin Ay_Pin LcdRs_Pin LcdCs_Pin */
-  GPIO_InitStruct.Pin = Az_Pin|Ay_Pin|LcdRs_Pin|LcdCs_Pin;
+  /*Configure GPIO pins : Az_Pin Ay_Pin LcdRs_Pin */
+  GPIO_InitStruct.Pin = Az_Pin|Ay_Pin|LcdRs_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Ax_Pin SS_Pin TpCs_Pin Dres_Pin */
-  GPIO_InitStruct.Pin = Ax_Pin|SS_Pin|TpCs_Pin|Dres_Pin;
+  /*Configure GPIO pins : Ax_Pin Dres_Pin */
+  GPIO_InitStruct.Pin = Ax_Pin|Dres_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1028,6 +1028,20 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(Boot1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : SS_Pin TpCs_Pin */
+  GPIO_InitStruct.Pin = SS_Pin|TpCs_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : LcdCs_Pin */
+  GPIO_InitStruct.Pin = LcdCs_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LcdCs_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : TpI_Pin */
   GPIO_InitStruct.Pin = TpI_Pin;

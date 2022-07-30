@@ -1,6 +1,6 @@
 Configuration	scopefat
-STM32CubeMX 	6.6.0
-Date	07/07/2022
+STM32CubeMX 	6.6.1
+Date	07/23/2022
 MCU	STM32F446RETx
 
 
