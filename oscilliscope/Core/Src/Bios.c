@@ -253,35 +253,42 @@ void ADC_Start(void)
 }
 
 // returns 0 if invalad or code
+// Original scaled to 1024 new to screen
+
 char Valid_Button(short x,short y)
 {
 	char valid;
+	unsigned short tmpx, tmpy;
 	valid =0;
 
-	x=x/4;
-	y=y/4;
+// convert to screen coordinates
+	tmpx =x*4;
+	tmpy =y*4;
+    tmpx *= 4;
+    tmpy *= 4;
+	x = tmpx/136;
+	y = tmpy/205;
 
-	if(y<=205)  //lower screen
+	if(y<=64)  //lower screen
 	{
-		if((x>359) && (x<664))  //middle screen bottom
+		if((x>192) && (x<288))  //middle screen bottom
 			valid =KEYCODE_DOWN;
-		if((x <= 205)||(x >= 818)) //left or right screen
+		if((x <= 96)||(x >= 384)) //left or right screen
 			valid = KEYCODE_MANU;
 	}
-
-	if(y >= 818)  //upper screen
+	if(y >= 256)  //upper screen
 	{
-		if((x>359) && (x<664))  //middle screen up
+		if((x>192) && (x<288))  //middle screen up
 			valid =KEYCODE_UP;
-		if((x <= 205)||(x >= 818)) //left or right screen
+		if((x <= 96)||(x >= 384)) //left or right screen
 			valid = KEYCODE_PLAY;
 	}
 
-	if((y>409) && (y<613))  //middle screen
+	if((y>128) && (y<192))  //middle screen
 	{
-		if(x <= 306) //left screen
+		if(x <= 160) //left screen
 			valid=KEYCODE_LEFT;
-		if(x >= 717) //right screen
+		if(x >= 320) //right screen
 			valid=KEYCODE_RIGHT;
 	}
 
